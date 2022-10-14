@@ -1,5 +1,5 @@
 const CONFIGS = {
-  keypointClassifierLabels: ['Open', 'Closed', 'Pointing'],
+  keypointClassifierLabels: ['Paper', 'Rock', 'Scissors'],
 };
 
 export default CONFIGS;
