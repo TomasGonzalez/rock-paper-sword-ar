@@ -6,7 +6,7 @@ import {
   drawRectangle,
 } from '@mediapipe/drawing_utils';
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
-import useKeyPointClassifier from '../hooks/useKeyPointClassifier';
+import useKeyPointClassifier from './useKeyPointClassifier';
 import CONFIGS from '../../../constants';
 
 const maxVideoWidth = 960;
@@ -24,8 +24,6 @@ function useLogic() {
   const onResults = useCallback(
     async (results) => {
       if (canvasEl.current) {
-        if (results.multiHandLandmarks.length) {
-        }
         const ctx = canvasEl.current.getContext('2d');
 
         ctx.save();
