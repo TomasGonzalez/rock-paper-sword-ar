@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Camera } from '@mediapipe/camera_utils';
 import {
   drawConnectors,
@@ -21,69 +21,76 @@ function useLogic() {
 
   const { processLandmark } = useKeyPointClassifier();
 
-  async function onResults(results) {
-    if (canvasEl.current) {
-      if (results.multiHandLandmarks.length) {
-      }
-      const ctx = canvasEl.current.getContext('2d');
-
-      ctx.save();
-      ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
-      ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
-
-      if (results.multiHandLandmarks) {
-        for (const [index, landmarks] of results.multiHandLandmarks.entries()) {
-          processLandmark(landmarks, results.image).then(
-            (val) => (handsGesture.current[index] = val)
-          );
-          console.log('gesture');
-          const landmarksX = landmarks.map((landmark) => landmark.x);
-          const landmarksY = landmarks.map((landmark) => landmark.y);
-          ctx.fillStyle = '#ff0000';
-          ctx.font = '24px serif';
-          ctx.fillText(
-            CONFIGS.keypointClassifierLabels[handsGesture.current[index]],
-            maxVideoWidth * Math.min(...landmarksX),
-            maxVideoHeight * Math.min(...landmarksY) - 15
-          );
-          drawRectangle(
-            ctx,
-            {
-              xCenter:
-                Math.min(...landmarksX) +
-                (Math.max(...landmarksX) - Math.min(...landmarksX)) / 2,
-              yCenter:
-                Math.min(...landmarksY) +
-                (Math.max(...landmarksY) - Math.min(...landmarksY)) / 2,
-              width: Math.max(...landmarksX) - Math.min(...landmarksX),
-              height: Math.max(...landmarksY) - Math.min(...landmarksY),
-              rotation: 0,
-              rectId: 13,
-            },
-            {
-              fillColor: 'transparent',
-              color: '#ff0000',
-              lineWidth: 1,
-            }
-          );
-          drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
-            color: '#00ffff',
-            lineWidth: 2,
-          });
-          drawLandmarks(ctx, landmarks, {
-            color: '#ffff29',
-            lineWidth: 1,
-          });
+  const onResults = useCallback(
+    async (results) => {
+      if (canvasEl.current) {
+        if (results.multiHandLandmarks.length) {
         }
-      }
-      ctx.restore();
-    }
-  }
+        const ctx = canvasEl.current.getContext('2d');
 
-  const loadHands = () => {
+        ctx.save();
+        ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
+        ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
+
+        if (results.multiHandLandmarks) {
+          for (const [
+            index,
+            landmarks,
+          ] of results.multiHandLandmarks.entries()) {
+            processLandmark(landmarks, results.image).then(
+              (val) => (handsGesture.current[index] = val)
+            );
+
+            const landmarksX = landmarks.map((landmark) => landmark.x);
+            const landmarksY = landmarks.map((landmark) => landmark.y);
+
+            ctx.fillStyle = '#ff0000';
+            ctx.font = '24px serif';
+            ctx.fillText(
+              CONFIGS.keypointClassifierLabels[handsGesture.current[index]],
+              maxVideoWidth * Math.min(...landmarksX),
+              maxVideoHeight * Math.min(...landmarksY) - 15
+            );
+            drawRectangle(
+              ctx,
+              {
+                xCenter:
+                  Math.min(...landmarksX) +
+                  (Math.max(...landmarksX) - Math.min(...landmarksX)) / 2,
+                yCenter:
+                  Math.min(...landmarksY) +
+                  (Math.max(...landmarksY) - Math.min(...landmarksY)) / 2,
+                width: Math.max(...landmarksX) - Math.min(...landmarksX),
+                height: Math.max(...landmarksY) - Math.min(...landmarksY),
+                rotation: 0,
+                rectId: 13,
+              },
+              {
+                fillColor: 'transparent',
+                color: '#ff0000',
+                lineWidth: 1,
+              }
+            );
+            drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+              color: '#00ffff',
+              lineWidth: 2,
+            });
+            drawLandmarks(ctx, landmarks, {
+              color: '#ffff29',
+              lineWidth: 1,
+            });
+          }
+        }
+        ctx.restore();
+      }
+    },
+    [processLandmark]
+  );
+
+  const loadHands = useCallback(() => {
     hands.current = new Hands({
       locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+        return `js/@mediapipe/hands/${file}`;
       },
     });
     hands.current.setOptions({
@@ -93,7 +100,7 @@ function useLogic() {
       minTrackingConfidence: 0.5,
     });
     hands.current.onResults(onResults);
-  };
+  }, [onResults]);
 
   useEffect(() => {
     async function initCamara() {
@@ -109,7 +116,7 @@ function useLogic() {
 
     initCamara();
     loadHands();
-  }, []);
+  }, [loadHands]);
 
   return { maxVideoHeight, maxVideoWidth, canvasEl, videoElement };
 }
