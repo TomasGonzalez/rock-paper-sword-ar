@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import HandsCapture from '../components/hands-capture/index';
-import Stage from '../components/stage';
-import theme from '../theme';
+import MainScene from '../components/main-scene';
 
-const MainScene = styled.div`
+const MainContainer = styled.div`
   background-color: ${(props) => props.theme.colors.sky};
   height: 100%;
   width: 100%;
@@ -12,9 +11,9 @@ const MainScene = styled.div`
 
 export default function Page() {
   return (
-    <MainScene>
-      <Stage />
-      {/* <HandsCapture /> */}
-    </MainScene>
+    <MainContainer>
+      <HandsCapture />
+      <MainScene />
+    </MainContainer>
   );
 }

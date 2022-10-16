@@ -10,6 +10,7 @@ function HandsCapture() {
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
+        position: 'absolute',
       }}
     >
       <video
@@ -18,7 +19,16 @@ function HandsCapture() {
         playsInline
         ref={videoElement}
       />
-      <canvas ref={canvasEl} width={maxVideoWidth} height={maxVideoHeight} />
+      <canvas
+        style={{
+          borderColor: 'red',
+          borderWidth: 1,
+          borderStyle: 'solid',
+        }}
+        ref={canvasEl}
+        width={maxVideoWidth}
+        height={maxVideoHeight}
+      />
     </div>
   );
 }

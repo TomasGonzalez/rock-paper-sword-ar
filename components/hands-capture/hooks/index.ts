@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Camera } from '@mediapipe/camera_utils';
 import {
   drawConnectors,
@@ -8,11 +8,17 @@ import {
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
 import useKeyPointClassifier from './useKeyPointClassifier';
 import CONFIGS from '../../../constants';
+import useMainStore from '../../../store/mainStore';
 
-const maxVideoWidth = 960;
-const maxVideoHeight = 540;
+const maxVideoWidth = 960 / 3;
+const maxVideoHeight = 540 / 3;
 
 function useLogic() {
+  const showVideo = useMainStore(({ showVideo }) => showVideo);
+  const setHandPosition = useMainStore(
+    ({ setHandPosition }) => setHandPosition
+  );
+  const handPosition = useMainStore(({ handPosition }) => handPosition);
   const videoElement = useRef<any>(null);
   const hands = useRef<any>(null);
   const camera = useRef<any>(null);
@@ -25,19 +31,20 @@ function useLogic() {
     async (results) => {
       if (canvasEl.current) {
         const ctx = canvasEl.current.getContext('2d');
-
         ctx.save();
         ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
-        ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
+        if (showVideo) {
+          ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
+        }
 
         if (results.multiHandLandmarks) {
           for (const [
             index,
             landmarks,
           ] of results.multiHandLandmarks.entries()) {
-            processLandmark(landmarks, results.image).then(
-              (val) => (handsGesture.current[index] = val)
-            );
+            processLandmark(landmarks, results.image).then((val) => {
+              handsGesture.current[index] = val;
+            });
 
             const landmarksX = landmarks.map((landmark) => landmark.x);
             const landmarksY = landmarks.map((landmark) => landmark.y);
@@ -82,7 +89,7 @@ function useLogic() {
         ctx.restore();
       }
     },
-    [processLandmark]
+    [processLandmark, showVideo]
   );
 
   const loadHands = useCallback(() => {
