@@ -9,30 +9,17 @@ import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
 import _ from 'lodash';
 import useKeyPointClassifier from './useKeyPointClassifier';
 import CONFIGS from '../../../constants';
-import useMainStore from '../../../store/mainStore';
 
 const maxVideoWidth = 960 / 3;
 const maxVideoHeight = 540 / 3;
 
 function useLogic() {
-  const showVideo = useMainStore(({ showVideo }) => showVideo);
-  const setHandPosition = useMainStore(
-    ({ setHandPosition }) => setHandPosition
-  );
-  const handPosition = useMainStore(({ handPosition }) => handPosition);
   const videoElement = useRef<any>(null);
   const hands = useRef<any>(null);
   const camera = useRef<any>(null);
   const canvasEl = useRef(null);
   const handsGesture = useRef<any>([0]);
-  const updateHandsPositionWithDebounce = useRef<any>(
-    _.throttle(() => {
-      console.log(handsGesture.current[0], 'runned the debounce', handPosition);
-      setHandPosition(handsGesture.current[0]);
-    }, 1000)
-  );
 
-  console.log('there was a rerender');
   const { processLandmark } = useKeyPointClassifier();
 
   const onResults = useCallback(
@@ -41,15 +28,7 @@ function useLogic() {
         const ctx = canvasEl.current.getContext('2d');
         ctx.save();
         ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
-
-        if (showVideo) {
-          ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
-        }
-
-        if (handsGesture.current[0] != handPosition) {
-          console.log(handsGesture.current[0], 'test', handPosition);
-          updateHandsPositionWithDebounce.current();
-        }
+        ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
 
         if (results.multiHandLandmarks) {
           for (const [
