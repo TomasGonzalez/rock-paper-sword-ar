@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Camera } from '@mediapipe/camera_utils';
 import {
   drawConnectors,
@@ -6,6 +6,7 @@ import {
   drawRectangle,
 } from '@mediapipe/drawing_utils';
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
+import _ from 'lodash';
 import useKeyPointClassifier from './useKeyPointClassifier';
 import CONFIGS from '../../../constants';
 import useMainStore from '../../../store/mainStore';
@@ -23,8 +24,15 @@ function useLogic() {
   const hands = useRef<any>(null);
   const camera = useRef<any>(null);
   const canvasEl = useRef(null);
-  const handsGesture = useRef<any>([]);
+  const handsGesture = useRef<any>([0]);
+  const updateHandsPositionWithDebounce = useRef<any>(
+    _.throttle(() => {
+      console.log(handsGesture.current[0], 'runned the debounce', handPosition);
+      setHandPosition(handsGesture.current[0]);
+    }, 1000)
+  );
 
+  console.log('there was a rerender');
   const { processLandmark } = useKeyPointClassifier();
 
   const onResults = useCallback(
@@ -33,8 +41,14 @@ function useLogic() {
         const ctx = canvasEl.current.getContext('2d');
         ctx.save();
         ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
+
         if (showVideo) {
           ctx.drawImage(results.image, 0, 0, maxVideoWidth, maxVideoHeight);
+        }
+
+        if (handsGesture.current[0] != handPosition) {
+          console.log(handsGesture.current[0], 'test', handPosition);
+          updateHandsPositionWithDebounce.current();
         }
 
         if (results.multiHandLandmarks) {
@@ -56,6 +70,7 @@ function useLogic() {
               maxVideoWidth * Math.min(...landmarksX),
               maxVideoHeight * Math.min(...landmarksY) - 15
             );
+
             drawRectangle(
               ctx,
               {
@@ -89,21 +104,21 @@ function useLogic() {
         ctx.restore();
       }
     },
-    [processLandmark, showVideo]
+    [processLandmark, showVideo, handPosition]
   );
 
   const loadHands = useCallback(() => {
     hands.current = new Hands({
-      locateFile: (file) => {
-        return `js/@mediapipe/hands/${file}`;
-      },
+      locateFile: (file) => `js/@mediapipe/hands/${file}`,
     });
+
     hands.current.setOptions({
       maxNumHands: 2,
       modelComplexity: 1,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
+
     hands.current.onResults(onResults);
   }, [onResults]);
 

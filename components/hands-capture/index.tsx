@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import useLogic from './hooks/index';
 
-function HandsCapture() {
+const HandsCapture = () => {
   const { videoElement, maxVideoWidth, maxVideoHeight, canvasEl } = useLogic();
+
   return (
     <div
       style={{
@@ -31,6 +32,6 @@ function HandsCapture() {
       />
     </div>
   );
-}
+};
 
-export default HandsCapture;
+export default memo(HandsCapture);
