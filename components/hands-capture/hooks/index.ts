@@ -13,7 +13,7 @@ import CONFIGS from '../../../constants';
 const maxVideoWidth = 960 / 3;
 const maxVideoHeight = 540 / 3;
 
-function useLogic() {
+function useLogic(updateHandsGesture) {
   const videoElement = useRef<any>(null);
   const hands = useRef<any>(null);
   const camera = useRef<any>(null);
@@ -36,7 +36,10 @@ function useLogic() {
             landmarks,
           ] of results.multiHandLandmarks.entries()) {
             processLandmark(landmarks, results.image).then((val) => {
-              handsGesture.current[index] = val;
+              if (handsGesture.current[index] !== val) {
+                handsGesture.current[index] = val;
+                updateHandsGesture([...handsGesture.current]);
+              }
             });
 
             const landmarksX = landmarks.map((landmark) => landmark.x);
@@ -83,7 +86,7 @@ function useLogic() {
         ctx.restore();
       }
     },
-    [processLandmark, showVideo, handPosition]
+    [processLandmark, updateHandsGesture]
   );
 
   const loadHands = useCallback(() => {

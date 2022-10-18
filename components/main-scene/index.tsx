@@ -17,6 +17,7 @@ function MainScene() {
       <ambientLight />
       <pointLight />
       <Fighter />
+      <Fighter left />
       <FightPlatform />
     </Canvas>
   );

@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
 import useLogic from './hooks/index';
 
-const HandsCapture = () => {
-  const { videoElement, maxVideoWidth, maxVideoHeight, canvasEl } = useLogic();
+const HandsCapture = ({ updateHandsGesture }) => {
+  const { videoElement, maxVideoWidth, maxVideoHeight, canvasEl } =
+    useLogic(updateHandsGesture);
 
   return (
     <div
@@ -25,6 +26,7 @@ const HandsCapture = () => {
           borderColor: 'red',
           borderWidth: 1,
           borderStyle: 'solid',
+          opacity: 0.3,
         }}
         ref={canvasEl}
         width={maxVideoWidth}
