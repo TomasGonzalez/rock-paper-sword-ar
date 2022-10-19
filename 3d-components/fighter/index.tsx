@@ -5,7 +5,7 @@ const HitBox = ({ hitboxRef, left }) => (
   <mesh
     ref={hitboxRef}
     scale={[0.2, 0.4, 0.2]}
-    position={[left ? -1 : 1, -1.75, 0]}
+    position={[left ? -1 : 1, 0.06, 0]}
   >
     <boxGeometry args={[1, 1, 1]} />
     <meshStandardMaterial color={'red'} />

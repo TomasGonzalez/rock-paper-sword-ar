@@ -9,7 +9,10 @@ const HandsCapture = ({ updateHandsGesture }) => {
     <div
       style={{
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
+        height: '100%',
+        width: '100%',
+        padding: 16,
         alignItems: 'center',
         flexDirection: 'column',
         position: 'absolute',
