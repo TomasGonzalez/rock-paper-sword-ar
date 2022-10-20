@@ -15,7 +15,7 @@ export default function Page() {
 
   //We should never re-render handsCaputure, as it produces errors,
   //to update the state we should pass a callback,
-  //and updated it in the parent component instead.
+  //and updated it in the parent component instead...
 
   const updateHandsGesture = useCallback(
     (newHandPosition) => {
