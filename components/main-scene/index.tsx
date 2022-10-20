@@ -1,7 +1,7 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { FightPlatform } from '../../3d-components';
-import Fighter from '../../3d-components/fighter';
+import FightersController from '../../3d-components/fighters-controller';
 
 function MainScene() {
   return (
@@ -16,8 +16,7 @@ function MainScene() {
     >
       <ambientLight />
       <pointLight />
-      <Fighter />
-      <Fighter left />
+      <FightersController />
       <FightPlatform />
     </Canvas>
   );
