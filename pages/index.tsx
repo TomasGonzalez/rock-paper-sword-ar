@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import HandsCapture from '../components/hands-capture/index';
 import MainScene from '../components/main-scene';
