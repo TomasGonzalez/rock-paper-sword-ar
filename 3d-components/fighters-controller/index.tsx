@@ -7,6 +7,13 @@ import Fighter from './fighter';
 const SPEED = 0.5;
 const STOP_DISTANCE = 0.2;
 
+enum actions {
+  'stop',
+  'walk',
+  'attack',
+  'fall',
+}
+
 interface FighterType {
   key: string;
   position: number[];
@@ -38,31 +45,6 @@ const fightersList: FighterType[] = [
   },
 ];
 
-const calculateMovement = (raycaster, delta, left, _state, handGesture) => {
-  if (left) {
-    return 0; //temporary behavior
-  }
-
-  const intersects = raycaster?.intersectObjects(_state.scene.children);
-  switch (handGesture[0]) {
-    case 2:
-      if (intersects[0]?.distance > STOP_DISTANCE) {
-        return left ? 0 : delta * -SPEED;
-      }
-      break;
-    case 1:
-      if (intersects[0]?.distance > STOP_DISTANCE) {
-        return left ? 0 : delta * -SPEED;
-      }
-
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-};
-
 const viewRaycast = (_state, index) => {
   _state.scene.add(
     new ArrowHelper(
@@ -72,6 +54,24 @@ const viewRaycast = (_state, index) => {
       0xff0000
     )
   );
+};
+
+const calculateMovement = (raycaster, delta, left, _state, action) => {
+  if (left) {
+    return 0; //temporary behavior
+  }
+
+  const intersects = raycaster?.intersectObjects(_state.scene.children);
+
+  if (action === actions.walk && intersects[0]?.distance > STOP_DISTANCE) {
+    return left ? 0 : delta * -SPEED;
+  }
+
+  return 0;
+};
+
+const actionSelection = (handGesture, fighterRef) => {
+  return actions.stop;
 };
 
 function FightersController() {
@@ -86,17 +86,15 @@ function FightersController() {
           new Vector3(index ? 1 : -1, 0, 0)
         );
 
-        if (fightersList[index].action) {
-          fighterRef.position.x += calculateMovement(
-            fightersList[index].raycaster,
-            delta,
-            index,
-            _state,
-            handGesture
-          );
-        } else {
-        }
+        fighterRef.action = actionSelection(handGesture, fighterRef);
 
+        fighterRef.position.x += calculateMovement(
+          fightersList[index].raycaster,
+          delta,
+          index,
+          _state,
+          fighterRef.action
+        );
         // viewRaycast(_state, index);
       });
     }
