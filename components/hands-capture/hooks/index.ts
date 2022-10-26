@@ -24,6 +24,8 @@ function useLogic(updateHandsGesture) {
 
   const onResults = useCallback(
     async (results) => {
+      const tempCTX = results?.image?.getContext('2d');
+      tempCTX?.scale(1, 1);
       if (canvasEl.current) {
         const ctx = canvasEl.current.getContext('2d');
         ctx.save();
@@ -52,7 +54,6 @@ function useLogic(updateHandsGesture) {
               maxVideoWidth * Math.min(...landmarksX),
               maxVideoHeight * Math.min(...landmarksY) - 15
             );
-
             drawRectangle(
               ctx,
               {
@@ -107,9 +108,8 @@ function useLogic(updateHandsGesture) {
   useEffect(() => {
     async function initCamara() {
       camera.current = new Camera(videoElement.current, {
-        onFrame: async () => {
-          await hands.current.send({ image: videoElement.current });
-        },
+        onFrame: async () =>
+          await hands.current.send({ image: videoElement.current }),
         width: maxVideoWidth,
         height: maxVideoHeight,
       });

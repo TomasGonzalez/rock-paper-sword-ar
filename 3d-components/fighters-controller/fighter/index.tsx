@@ -1,46 +1,16 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Raycaster, Vector3 } from 'three';
-import { Machine } from 'xstate';
 import useMainStore from '../../../store/mainStore';
+import { useMachine } from '@xstate/react';
 
 const SPEED = 0.5;
 const STOP_DISTANCE = 0.2;
 
-const createMachine = (props) => {
-  const machine = Machine({
-    id: props.key,
-    initial: 'idle',
-    states: {
-      idle: {
-        on: {
-          WALK: 'walk',
-        },
-      },
-      walk: {},
-      shield: {},
-      kick: {},
-      sword: {},
-      fall: {},
-    },
-    on: {
-      CHANGE: [
-        {
-          target: 'idle',
-          actions: (_, e) => {
-            console.log("I'm idle");
-          },
-        },
-      ],
-    },
-  });
-  return machine;
-};
-
 const Fighter = (props) => {
   const handGesture = useMainStore((store) => store.handGesture);
+  const [fighterState, fighterSend] = useMachine(props.machine);
   const raycaster = useRef<any>(new Raycaster());
-  const machine = useRef(createMachine(props));
   const ref = useRef<any>();
 
   const calculateMovement = (state, delta) => {
@@ -52,16 +22,31 @@ const Fighter = (props) => {
       state.scene.children
     );
 
-    console.log(intersects[0], 'this are intersects');
-    if (intersects[0]?.distance < 0.4) {
+    // console.log(intersects[0], 'this are intersects');
+    if (intersects[0]?.distance < STOP_DISTANCE) {
       return 0;
     }
 
     return props.left ? 0 : delta * -SPEED;
   };
 
+  useEffect(() => {
+    switch (handGesture[0]) {
+      case 0:
+        fighterSend('KICK');
+        break;
+
+      case 1:
+        fighterSend('SHIELD');
+        break;
+
+      case 2:
+        fighterSend('SWORD');
+    }
+  }, [handGesture, fighterSend]);
+
   useFrame((state, delta) => {
-    if (raycaster.current && ref.current) {
+    if (raycaster.current && ref.current && fighterState.matches('walk')) {
       raycaster.current.set(
         ref.current.position,
         new Vector3(props.left ? 1 : -1, 0, 0)

@@ -1,32 +1,42 @@
-import { memo, useRef } from 'react';
+import { memo } from 'react';
 import Fighter from './fighter';
+import initMachine from './fighter/initMachine';
 
 interface FighterType {
-  key: string;
+  idKey: string;
+  machine: any;
   position: number[];
   scale: number[];
   left?: boolean;
 }
 
 const fightersList: FighterType[] = [
-  {
-    key: 'fighter1',
-    position: [1, 0.06, 0],
-    scale: [0.2, 0.4, 0.2],
-  },
-  {
-    key: 'fighter2',
-    position: [-1, 0.06, 0],
-    scale: [0.2, 0.4, 0.2],
-    left: true,
-  },
+  (() => {
+    const id = 'fighter1';
+    return {
+      idKey: id,
+      position: [1, 0.06, 0],
+      scale: [0.2, 0.4, 0.2],
+      machine: initMachine(id),
+    };
+  })(),
+  (() => {
+    const id = 'fighter2';
+    return {
+      idKey: id,
+      position: [-1, 0.06, 0],
+      scale: [0.2, 0.4, 0.2],
+      left: true,
+      machine: initMachine(id),
+    };
+  })(),
 ];
 
 function FightersController() {
   return (
     <>
-      {fightersList.map((fightersData, index) => (
-        <Fighter key={fightersData.key} {...fightersData} />
+      {fightersList.map((fightersData) => (
+        <Fighter key={fightersData.idKey} {...fightersData} />
       ))}
     </>
   );

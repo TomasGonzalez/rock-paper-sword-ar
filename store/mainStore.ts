@@ -8,7 +8,7 @@ interface State {
 }
 
 const useMainStore = create<State>((set) => ({
-  handGesture: [0],
+  handGesture: [-1],
   setHandGesture: (newHandGesture) =>
     set(() => ({ handGesture: newHandGesture })),
   showVideo: false,
