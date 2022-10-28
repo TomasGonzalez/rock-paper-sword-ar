@@ -2,6 +2,7 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { FightPlatform } from '../../3d-components';
 import FightersController from '../../3d-components/fighters-controller';
+import { Stage } from '@react-three/drei';
 
 function MainScene() {
   return (
@@ -14,10 +15,10 @@ function MainScene() {
         overflow: 'hidden',
       }}
     >
-      <ambientLight />
-      <pointLight />
-      <FightersController />
-      <FightPlatform />
+      <Stage environment='city'>
+        <FightersController />
+        <FightPlatform />
+      </Stage>
     </Canvas>
   );
 }

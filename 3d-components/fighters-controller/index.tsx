@@ -5,8 +5,8 @@ import initMachine from './fighter/initMachine';
 interface FighterType {
   idKey: string;
   machine: any;
-  position: number[];
-  scale: number[];
+  position?: number[];
+  scale?: number[];
   left?: boolean;
 }
 
@@ -16,7 +16,8 @@ const fightersList: FighterType[] = [
     return {
       idKey: id,
       position: [1, 0.06, 0],
-      scale: [0.2, 0.4, 0.2],
+      rotation: [0, Math.PI / 2, 0],
+      scale: [0.5, 0.5, 0.5],
       machine: initMachine(id),
     };
   })(),
@@ -25,7 +26,8 @@ const fightersList: FighterType[] = [
     return {
       idKey: id,
       position: [-1, 0.06, 0],
-      scale: [0.2, 0.4, 0.2],
+      rotation: [0, -Math.PI / 2, 0],
+      scale: [0.5, 0.5, 0.5],
       left: true,
       machine: initMachine(id),
     };
