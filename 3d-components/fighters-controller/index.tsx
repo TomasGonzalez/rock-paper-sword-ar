@@ -1,47 +1,37 @@
-import { memo } from 'react';
-import Fighter from './fighter';
+import { Instances, Fighter } from './fighter/FighterModel';
 import initMachine from './fighter/initMachine';
 
 interface FighterType {
-  idKey: string;
   machine: any;
   position?: number[];
+  rotation?: number[];
   scale?: number[];
   left?: boolean;
 }
 
 const fightersList: FighterType[] = [
-  (() => {
-    const id = 'fighter1';
-    return {
-      idKey: id,
-      position: [1, 0.06, 0],
-      rotation: [0, Math.PI / 2, 0],
-      scale: [0.5, 0.5, 0.5],
-      machine: initMachine(id),
-    };
-  })(),
-  (() => {
-    const id = 'fighter2';
-    return {
-      idKey: id,
-      position: [-1, 0.06, 0],
-      rotation: [0, -Math.PI / 2, 0],
-      scale: [0.5, 0.5, 0.5],
-      left: true,
-      machine: initMachine(id),
-    };
-  })(),
+  {
+    position: [1, 0.06, 0],
+    rotation: [0, Math.PI / 2, 0],
+    scale: [0.5, 0.5, 0.5],
+    machine: initMachine('fighter1'),
+  },
+  {
+    position: [-1, 0.06, 0],
+    rotation: [0, -Math.PI / 2, 0],
+    scale: [0.5, 0.5, 0.5],
+    left: true,
+    machine: initMachine('fighter2'),
+  },
 ];
 
 function FightersController() {
   return (
-    <>
-      {fightersList.map((fightersData) => (
-        <Fighter key={fightersData.idKey} {...fightersData} />
-      ))}
-    </>
+    <Instances>
+      <Fighter {...fightersList[1]} />
+      <Fighter {...fightersList[0]} />
+    </Instances>
   );
 }
 
-export default memo(FightersController);
+export default FightersController;

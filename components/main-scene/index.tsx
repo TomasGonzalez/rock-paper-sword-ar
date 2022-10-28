@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { FightPlatform } from '../../3d-components';
 import FightersController from '../../3d-components/fighters-controller';
-import { Stage } from '@react-three/drei';
+import { OrbitControls, Stage } from '@react-three/drei';
 
 function MainScene() {
   return (
@@ -15,8 +15,11 @@ function MainScene() {
         overflow: 'hidden',
       }}
     >
+      <OrbitControls />
       <Stage environment='city'>
-        <FightersController />
+        <Suspense fallback={null}>
+          <FightersController />
+        </Suspense>
         <FightPlatform />
       </Stage>
     </Canvas>

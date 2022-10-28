@@ -22,7 +22,7 @@ const useFighterLogic = (props) => {
       state.scene.children
     );
 
-    // console.log(intersects[0], 'this are intersects');
+    console.log(intersects[0], 'this are intersects');
     if (intersects[0]?.distance < STOP_DISTANCE) {
       return 0;
     }
