@@ -1,23 +1,25 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
-import { useGLTF } from '@react-three/drei';
+import React, { forwardRef, useEffect, useMemo } from 'react';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import useFighterLogic from './hooks/useFighterLogic';
+import { SkeletonUtils } from 'three-stdlib';
 
 const Fighter = ({ position, ...props }) => {
-  const { ref } = useFighterLogic(props);
-  const { nodes, materials, scene } = useGLTF(
-    '3d-models/fighter/footballPlayer.glb'
+  const { nodes, materials, scene, animations } = useGLTF(
+    '/footballPlayer.glb'
   );
+  const { ref } = useFighterLogic({ ...props, animations });
+  const cloneScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
   return (
-    <group>
-      <primitive ref={ref} object={scene} position={[0, -0.55, 0]} {...props} />
-      {/* <mesh>
+    <group ref={ref} position={position}>
+      <primitive object={cloneScene} position={[0, -0.55, 0]} {...props} />
+      <mesh>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={'red'} />
-      </mesh> */}
+        <meshStandardMaterial transparent opacity={0} color={'red'} />
+      </mesh>
     </group>
   );
 };
 
 export default forwardRef(Fighter);
-useGLTF.preload('3d-models/fighter/footballPlayer.glb');
+useGLTF.preload('/footballPlayer.glb');
