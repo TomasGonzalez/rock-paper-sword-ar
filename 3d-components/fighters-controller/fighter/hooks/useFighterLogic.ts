@@ -1,10 +1,10 @@
-import { useRef, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useRef, useEffect, useCallback } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Raycaster, Vector3 } from 'three';
 import { useMachine } from '@xstate/react';
-import useMainStore from '../../../../store/mainStore';
 import { useAnimations } from '@react-three/drei';
-import { assign } from 'xstate';
+import _ from 'lodash';
+import useMainStore from '../../../../store/mainStore';
 
 const SPEED = 0.5;
 const STOP_DISTANCE = 0.2;
@@ -15,6 +15,7 @@ const useFighterLogic = ({ animations, ...props }) => {
   const raycaster = useRef<any>(new Raycaster());
   const ref = useRef<any>();
   const { actions, mixer, ...animationsProps } = useAnimations(animations, ref);
+  const state = useThree();
 
   const animationTransition = (a, b) => {
     mixer.stopAllAction();
@@ -27,27 +28,40 @@ const useFighterLogic = ({ animations, ...props }) => {
     actions: {
       // action implementations
       shielding: (context, event) => {
-        console.log('shielding...');
         animationTransition(actions.walk, actions.shielding);
       },
       kicking: (context, event) => {
-        console.log('kicking...');
         animationTransition(actions.walk, actions.kick);
       },
       slashing: (context, event) => {
-        console.log('slashing...');
         animationTransition(actions.walk, actions.sword_slash);
       },
       idling: () => {
-        console.log('Idling...', actions);
         animationTransition(actions.walk, actions.idle);
       },
       walking: () => {
-        console.log('Walking testing...');
         animationTransition(actions.idle, actions.walk);
       },
     },
+    guards: {
+      isColliding: (context, event) => {
+        const intersects = raycaster?.current.intersectObjects(
+          state.scene.children
+        );
+        if (!intersects.length) return true;
+
+        return (
+          intersects[0]?.distance < STOP_DISTANCE && intersects[0]?.distance > 0
+        );
+      },
+    },
   });
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSetIDLE = useCallback(
+    _.debounce(() => fighterSend('IDLE'), 200),
+    [fighterSend]
+  );
 
   const calculateMovement = (state, delta) => {
     if (props.left) {
@@ -76,7 +90,11 @@ const useFighterLogic = ({ animations, ...props }) => {
       state.scene.children
     );
 
-    if (intersects[0]?.distance < STOP_DISTANCE) {
+    if (
+      intersects[0]?.distance < STOP_DISTANCE &&
+      intersects[0]?.distance > 0
+    ) {
+      debouncedSetIDLE();
     }
 
     if (raycaster.current && ref.current && fighterState.matches('walk')) {
