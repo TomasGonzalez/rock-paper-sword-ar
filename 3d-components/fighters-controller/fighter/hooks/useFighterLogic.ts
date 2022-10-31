@@ -4,9 +4,11 @@ import { Raycaster, Vector3 } from 'three';
 import { useMachine } from '@xstate/react';
 import useMainStore from '../../../../store/mainStore';
 import { useAnimations } from '@react-three/drei';
+import { assign } from 'xstate';
 
 const SPEED = 0.5;
 const STOP_DISTANCE = 0.2;
+const ANIMATION_TRANSITION_SPEED = 0.1;
 
 const useFighterLogic = ({ animations, ...props }) => {
   const handGesture = useMainStore((store) => store.handGesture);
@@ -14,44 +16,35 @@ const useFighterLogic = ({ animations, ...props }) => {
   const ref = useRef<any>();
   const { actions, mixer, ...animationsProps } = useAnimations(animations, ref);
 
-  useEffect(() => {
-    console.log(mixer, 'mixer');
-    console.log(actions, 'mixer');
-    console.log(animationsProps, 'animation props');
-  }, []);
-
-  const idleAction = () => {
-    actions.walk.stop();
-    actions.idle.play();
-    // actions.walk.crossFadeTo(actions.idle.play());
+  const animationTransition = (a, b) => {
+    mixer.stopAllAction();
+    a.play();
+    a.crossFadeTo(b, ANIMATION_TRANSITION_SPEED);
+    b.play();
   };
 
   const [fighterState, fighterSend] = useMachine(props.machine, {
     actions: {
       // action implementations
       shielding: (context, event) => {
-        console.log('playing Idle animation shielding...');
-        idleAction();
+        console.log('shielding...');
+        animationTransition(actions.walk, actions.shielding);
       },
       kicking: (context, event) => {
-        console.log('playing Idle animation shielding...');
-        idleAction();
+        console.log('kicking...');
+        animationTransition(actions.walk, actions.kick);
       },
       slashing: (context, event) => {
-        console.log('playing Idle animation shielding...');
         console.log('slashing...');
-        idleAction();
+        animationTransition(actions.walk, actions.sword_slash);
       },
       idling: () => {
-        console.log('playing Idle animation shielding...');
-        console.log('Idling...');
-        actions.idle.play();
+        console.log('Idling...', actions);
+        animationTransition(actions.walk, actions.idle);
       },
       walking: () => {
-        // actions.crossFadeTo();
-        actions.idle.stop();
-        actions.walk.play();
         console.log('Walking testing...');
+        animationTransition(actions.idle, actions.walk);
       },
     },
   });
@@ -60,15 +53,6 @@ const useFighterLogic = ({ animations, ...props }) => {
     if (props.left) {
       return 0; //temporary behavior
     }
-
-    const intersects = raycaster?.current.intersectObjects(
-      state.scene.children
-    );
-
-    if (intersects[0]?.distance < STOP_DISTANCE) {
-      return 0;
-    }
-
     return props.left ? 0 : delta * -SPEED;
   };
 
@@ -88,6 +72,13 @@ const useFighterLogic = ({ animations, ...props }) => {
   }, [handGesture, fighterSend]);
 
   useFrame((state, delta) => {
+    const intersects = raycaster?.current.intersectObjects(
+      state.scene.children
+    );
+
+    if (intersects[0]?.distance < STOP_DISTANCE) {
+    }
+
     if (raycaster.current && ref.current && fighterState.matches('walk')) {
       raycaster.current.set(
         ref.current.position,

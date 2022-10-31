@@ -15,7 +15,6 @@ function MainScene() {
         overflow: 'hidden',
       }}
     >
-      <OrbitControls />
       <Stage environment='city'>
         <Suspense fallback={null}>
           <FightersController />

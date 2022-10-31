@@ -1,14 +1,11 @@
 import { assign, createMachine } from 'xstate';
 
+const STATE_TIME = 400;
+
 const initMachine = (key) =>
   createMachine({
     id: key,
     initial: 'idle',
-    context: {
-      elapsed: 0, //current attack action time
-      duration: 1, //duration of attacks
-      interval: 0.1, //smoothness of speed attacks
-    },
     states: {
       idle: {
         on: {
@@ -34,95 +31,32 @@ const initMachine = (key) =>
         ],
       },
       shield: {
-        invoke: {
-          src: (context) => (cb) => {
-            const interval = setInterval(() => {
-              cb('TICK');
-            }, 1000 * context.interval);
-
-            return () => {
-              clearInterval(interval);
-            };
-          },
-        },
         on: {
           WALK: 'walk',
           FALL: 'fall',
-          '': {
-            target: 'walk',
-            cond: (context) => {
-              return context.elapsed >= context.duration;
-            },
-          },
-          TICK: {
-            actions: assign({
-              elapsed: (context: any) => {
-                return +(context.elapsed + context.interval).toFixed(2);
-              },
-            }),
-          },
+        },
+        after: {
+          [STATE_TIME]: { target: 'walk' },
         },
         entry: ['shielding'],
       },
       kick: {
-        invoke: {
-          src: (context) => (cb) => {
-            const interval = setInterval(() => {
-              cb('TICK');
-            }, 1000 * context.interval);
-
-            return () => {
-              clearInterval(interval);
-            };
-          },
-        },
         on: {
           WALK: 'walk',
           FALL: 'fall',
-          '': {
-            target: 'walk',
-            cond: (context) => {
-              return context.elapsed >= context.duration;
-            },
-          },
-          TICK: {
-            actions: assign({
-              elapsed: (context: any) => {
-                return +(context.elapsed + context.interval).toFixed(2);
-              },
-            }),
-          },
+        },
+        after: {
+          [STATE_TIME]: { target: 'walk' },
         },
         entry: ['kicking'],
       },
       sword: {
-        invoke: {
-          src: (context) => (cb) => {
-            const interval = setInterval(() => {
-              cb('TICK');
-            }, 1000 * context.interval);
-
-            return () => {
-              clearInterval(interval);
-            };
-          },
-        },
         on: {
           walk: 'walk',
           fall: 'fall',
-          '': {
-            target: 'walk',
-            cond: (context) => {
-              return context.elapsed >= context.duration;
-            },
-          },
-          TICK: {
-            actions: assign({
-              elapsed: (context: any) => {
-                return +(context.elapsed + context.interval).toFixed(2);
-              },
-            }),
-          },
+        },
+        after: {
+          [STATE_TIME]: { target: 'walk' },
         },
         entry: ['slashing'],
       },

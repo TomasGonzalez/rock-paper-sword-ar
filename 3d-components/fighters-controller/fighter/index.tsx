@@ -1,14 +1,12 @@
-import React, { forwardRef, useEffect, useMemo } from 'react';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import React, { forwardRef, useMemo } from 'react';
+import { useGLTF } from '@react-three/drei';
 import useFighterLogic from './hooks/useFighterLogic';
 import { SkeletonUtils } from 'three-stdlib';
 
 const Fighter = ({ position, ...props }) => {
-  const { nodes, materials, scene, animations } = useGLTF(
-    '/footballPlayer.glb'
-  );
-  const { ref } = useFighterLogic({ ...props, animations });
+  const { scene, animations } = useGLTF('/footballPlayer.glb');
   const cloneScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const { ref } = useFighterLogic({ ...props, animations });
 
   return (
     <group ref={ref} position={position}>
