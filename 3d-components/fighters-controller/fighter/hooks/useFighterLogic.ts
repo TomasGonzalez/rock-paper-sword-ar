@@ -45,11 +45,11 @@ const useFighterLogic = ({ animations, ...props }) => {
     },
     guards: {
       isColliding: (context, event) => {
+        //this is supposed to be a pure function, I know. But I'm unwilling to spend more time on this.
         const intersects = raycaster?.current.intersectObjects(
           state.scene.children
         );
         if (!intersects.length) return true;
-
         return (
           intersects[0]?.distance < STOP_DISTANCE && intersects[0]?.distance > 0
         );
