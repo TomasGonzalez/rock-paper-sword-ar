@@ -54,8 +54,8 @@ const initMachine = (key) =>
         },
         sword: {
           on: {
-            walk: 'walk',
-            fall: 'fall',
+            WALK: 'walk',
+            FALL: 'fall',
           },
           after: [
             { delay: 'ACTION_DELAY', target: 'idle', cond: 'isColliding' },
@@ -63,7 +63,17 @@ const initMachine = (key) =>
           ],
           entry: ['slashing'],
         },
-        fall: {},
+        fall: {
+          on: {
+            WALK: 'walk',
+            IDLE: 'idle',
+          },
+          after: [
+            { delay: 'ACTION_DELAY', target: 'idle', cond: 'isColliding' },
+            { delay: 'ACTION_DELAY', target: 'walk' },
+          ],
+          entry: ['falling'],
+        },
       },
     },
     {

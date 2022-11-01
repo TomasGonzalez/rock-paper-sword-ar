@@ -6,7 +6,7 @@ import { SkeletonUtils } from 'three-stdlib';
 const Fighter = ({ position, ...props }) => {
   const { scene, animations } = useGLTF('/footballPlayer.glb');
   const cloneScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { ref } = useFighterLogic({ ...props, animations });
+  const { ref } = useFighterLogic({ ...props, animations, position });
 
   return (
     <group ref={ref} position={position}>
