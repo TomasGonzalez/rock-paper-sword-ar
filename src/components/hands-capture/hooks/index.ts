@@ -6,7 +6,6 @@ import {
   drawRectangle,
 } from '@mediapipe/drawing_utils';
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
-import _ from 'lodash';
 import useKeyPointClassifier from './useKeyPointClassifier';
 import CONFIGS from '../../../../constants';
 
@@ -92,7 +91,7 @@ function useLogic(updateHandsGesture) {
 
   const loadHands = useCallback(() => {
     hands.current = new Hands({
-      locateFile: (file) => `js/@mediapipe/hands/${file}`,
+      locateFile: (file) => `public/${file}`,
     });
 
     hands.current.setOptions({

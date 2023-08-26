@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Landmark, Results } from '@mediapipe/hands';
+import { Results } from '@mediapipe/hands';
 import * as tf from '@tensorflow/tfjs';
 import _ from 'lodash';
 
@@ -9,7 +9,7 @@ const calcLandmarkList = (image, landmarks) => {
   const landmarkPoint: any = [];
 
   // Keypoint
-  Object.values(landmarks).forEach((landmark: Landmark) => {
+  Object.values(landmarks).forEach((landmark: any) => {
     const landmarkX = Math.min(landmark.x * imageWidth, imageWidth - 1);
     const landmarkY = Math.min(landmark.y * imageHeight, imageHeight - 1);
 
@@ -26,7 +26,7 @@ const preProcessLandmark = (landmarkList) => {
   let baseY = 0;
 
   //convert to realtive coordinates
-  Object.values(tempLandmarkList).forEach((landmarkPoint, index) => {
+  Object.values(tempLandmarkList).forEach((landmarkPoint: any, index) => {
     if (!index) {
       baseX = parseInt(landmarkPoint[0]);
       baseY = parseInt(landmarkPoint[1]);

@@ -11,7 +11,7 @@ const useMainStore = create<State>((set) => ({
   handGesture: [-1],
   setHandGesture: (newHandGesture) =>
     set(() => ({ handGesture: newHandGesture })),
-  showVideo: false,
+  showVideo: true,
   setShowVideo: (newShowVideo) => set(() => ({ showVideo: newShowVideo })),
 }));
 

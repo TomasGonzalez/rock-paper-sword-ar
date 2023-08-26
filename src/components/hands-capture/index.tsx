@@ -19,7 +19,10 @@ const HandsCapture = ({ updateHandsGesture }) => {
       }}
     >
       <video
-        style={{ display: 'none', transform: 'scale(-1, 1)' }}
+        style={{
+          display: 'none',
+          transform: 'scale(-1, 1)',
+        }}
         className='video'
         playsInline
         ref={videoElement}

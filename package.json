@@ -20,6 +20,7 @@
     "@techstark/opencv-js": "^4.6.0-release.1",
     "@tensorflow/tfjs": "^3.21.0",
     "@tensorflow/tfjs-node": "^3.21.1",
+    "@types/styled-components": "^5.1.26",
     "@xstate/react": "^3.0.1",
     "device-detector-js": "^3.0.3",
     "lodash": "^4.17.21",
@@ -40,6 +41,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-plugin-static-copy": "^0.17.0"
   }
 }
