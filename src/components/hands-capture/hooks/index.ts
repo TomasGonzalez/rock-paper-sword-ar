@@ -8,7 +8,7 @@ import {
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
 import _ from 'lodash';
 import useKeyPointClassifier from './useKeyPointClassifier';
-import CONFIGS from '../../../constants';
+import CONFIGS from '../../../../constants';
 
 const maxVideoWidth = 960 / 3;
 const maxVideoHeight = 540 / 3;
