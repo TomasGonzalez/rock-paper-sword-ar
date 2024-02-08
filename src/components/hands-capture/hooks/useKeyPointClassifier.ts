@@ -21,7 +21,6 @@ const calcLandmarkList = (image, landmarks) => {
 
 const preProcessLandmark = (landmarkList) => {
   let tempLandmarkList = _.cloneDeep(landmarkList);
-
   let baseX = 0;
   let baseY = 0;
 
