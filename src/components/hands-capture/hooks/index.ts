@@ -12,12 +12,13 @@ import CONFIGS from '../../../../constants';
 const maxVideoWidth = 960 / 3;
 const maxVideoHeight = 540 / 3;
 
-function useLogic(updateHandsGesture) {
+function useLogic(updateHandsGesture, updateHandsGesture2) {
   const videoElement = useRef<any>(null);
   const hands = useRef<any>(null);
   const camera = useRef<any>(null);
   const canvasEl = useRef(null);
-  const handsGesture = useRef<any>([0]);
+  const handsGesture1 = useRef<any>([0]);
+  const handsGesture2 = useRef<any>([0]);
 
   const { processLandmark } = useKeyPointClassifier();
 
@@ -36,20 +37,39 @@ function useLogic(updateHandsGesture) {
             index,
             landmarks,
           ] of results.multiHandLandmarks.entries()) {
-            processLandmark(landmarks, results.image).then((val) => {
-              if (handsGesture.current[index] !== val) {
-                handsGesture.current[index] = val;
-                updateHandsGesture([...handsGesture.current]);
-              }
-            });
+            if (index === 0) {
+              processLandmark(landmarks, results.image).then((val) => {
+                if (handsGesture1.current[0] !== val) {
+                  handsGesture1.current[0] = val;
+                  updateHandsGesture([...handsGesture1.current]);
+                }
+              });
+              drawHand(landmarks, ctx, handsGesture1.current[0]) 
+            } else {
+              processLandmark(landmarks, results.image).then((val) => {
+                if (handsGesture2.current[0] !== val) {
+                  handsGesture2.current[0] = val;
+                  updateHandsGesture2([...handsGesture2.current]);
+                }
+              });
+              drawHand(landmarks, ctx, handsGesture2.current[0], '#000099') 
+            }
+          }
+        }
+        ctx.restore();
+      }
+    },
+    [processLandmark, updateHandsGesture]
+  );
 
+  const drawHand = (landmarks, ctx, currentHand, color='#ff0000') => {
             const landmarksX = landmarks.map((landmark) => landmark.x);
             const landmarksY = landmarks.map((landmark) => landmark.y);
 
-            ctx.fillStyle = '#ff0000';
+            ctx.fillStyle = color;
             ctx.font = '24px serif';
             ctx.fillText(
-              CONFIGS.keypointClassifierLabels[handsGesture.current[index]],
+              CONFIGS.keypointClassifierLabels[currentHand],
               maxVideoWidth * Math.min(...landmarksX),
               maxVideoHeight * Math.min(...landmarksY) - 15
             );
@@ -65,29 +85,22 @@ function useLogic(updateHandsGesture) {
                 width: Math.max(...landmarksX) - Math.min(...landmarksX),
                 height: Math.max(...landmarksY) - Math.min(...landmarksY),
                 rotation: 0,
-                rectId: 13,
               },
               {
                 fillColor: 'transparent',
-                color: '#ff0000',
+                color,
                 lineWidth: 1,
               }
             );
             drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
-              color: '#00ffff',
+              color,
               lineWidth: 2,
             });
             drawLandmarks(ctx, landmarks, {
-              color: '#ffff29',
+              color,
               lineWidth: 1,
             });
-          }
-        }
-        ctx.restore();
-      }
-    },
-    [processLandmark, updateHandsGesture]
-  );
+  }
 
   const loadHands = useCallback(() => {
     hands.current = new Hands({
@@ -121,5 +134,6 @@ function useLogic(updateHandsGesture) {
 
   return { maxVideoHeight, maxVideoWidth, canvasEl, videoElement };
 }
+
 
 export default useLogic;

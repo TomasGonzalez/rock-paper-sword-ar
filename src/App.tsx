@@ -13,24 +13,40 @@ const MainContainer = styled.div`
 `;
 
 export default function App() {
-  const setHandPosition = useMainStore((state) => state.setHandGesture);
+  const [setHandPosition, setHandGesture2, gameOver] = useMainStore((state) => [state.setHandGesture, state.setHandGesture2, state.gameOver]);
 
   /*
    *  We should never re-render handsCaputure, as it produces errors,
    *  to update the state we should pass a callback and updated it in the parent component instead.
    */
 
-  const updateHandsGesture = useCallback(
+  const updateHandsGesture2 = useCallback(
     (newHandPosition) => {
       setHandPosition(newHandPosition);
     },
     [setHandPosition]
   );
+  const updateHandsGesture = useCallback(
+    (newHandPosition) => {
+      setHandGesture2(newHandPosition);
+    },
+    [setHandGesture2]
+  );
 
   return (
     <ThemeProvider theme={theme}>
       <MainContainer>
-        <HandsCapture updateHandsGesture={updateHandsGesture} />
+        <div style={{
+          position: 'absolute', 
+          alignSelf: 'center', 
+          left: '40%', 
+          fontSize: 150, 
+          zIndex: 100000,
+          textAlign: 'center'
+          }}>
+          {gameOver} 
+        </div>
+        <HandsCapture updateHandsGesture={updateHandsGesture} updateHandsGesture2={updateHandsGesture2} />
         <MainScene />
       </MainContainer>
     </ThemeProvider>

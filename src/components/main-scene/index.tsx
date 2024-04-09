@@ -1,8 +1,8 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { FightPlatform } from '../../3d-components';
 import FightersController from '../../3d-components/fighters-controller';
-import { OrbitControls, Stage } from '@react-three/drei';
+import { Stage } from '@react-three/drei';
 
 function MainScene() {
   return (

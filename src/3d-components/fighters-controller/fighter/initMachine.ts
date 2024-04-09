@@ -12,6 +12,7 @@ const initMachine = (key) =>
             SHIELD: 'shield',
             KICK: 'kick',
             SWORD: 'sword',
+            FALL: 'fall'
           },
           entry: ['idling'],
         },

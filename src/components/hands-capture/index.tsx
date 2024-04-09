@@ -1,9 +1,8 @@
 import { memo } from 'react';
 import useLogic from './hooks/index';
 
-const HandsCapture = ({ updateHandsGesture }) => {
-  const { videoElement, maxVideoWidth, maxVideoHeight, canvasEl } =
-    useLogic(updateHandsGesture);
+const HandsCapture = ({ updateHandsGesture, updateHandsGesture2 }) => {
+  const { videoElement, maxVideoWidth, maxVideoHeight, canvasEl } = useLogic(updateHandsGesture, updateHandsGesture2);
 
   return (
     <div
